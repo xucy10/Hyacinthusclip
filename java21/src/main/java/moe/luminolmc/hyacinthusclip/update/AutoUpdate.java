@@ -132,8 +132,8 @@ public final class AutoUpdate {
             }
 
             return Path.of(Hyacinthusclip.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-                .toAbsolutePath()
-                .normalize();
+                    .toAbsolutePath()
+                    .normalize();
         } catch (URISyntaxException | IllegalArgumentException e) {
             return null;
         }
