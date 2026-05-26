@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 
 class IPUtil {
     protected static String getCountryByIp() {
+        final long timeout = Long.getLong("hyacinthusclip.getCountryTimeout", 5) * 1000;
         HttpClient client = HttpClient.newHttpClient();
         ExecutorService executor = Executors.newFixedThreadPool(IpApi.values().length);
 
@@ -44,8 +45,9 @@ class IPUtil {
 
             long startTime = System.currentTimeMillis();
             while (!firstCompleted.isDone()) {
-                if (System.currentTimeMillis() - startTime > 5000) return "Unknown";
+                if (System.currentTimeMillis() - startTime > timeout) return "Unknown";
                 Thread.sleep(50);
+                firstCompleted = CompletableFuture.anyOf(futures);
             }
 
             try {
