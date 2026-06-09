@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: zulu
-          java-version: 21
+          java-version: 25
       - name: Publish to repo
         if: github.event_name != 'pull_request'
         run: ./gradlew -Dorg.gradle.parallel=true publish --no-daemon --stacktrace

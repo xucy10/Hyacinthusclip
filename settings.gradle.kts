@@ -3,4 +3,4 @@ plugins {
 }
 
 rootProject.name = "hyacinthusclip"
-include("java6", "java21")
+include("java6", "java25")

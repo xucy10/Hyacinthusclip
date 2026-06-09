@@ -164,6 +164,16 @@ public class MixinServiceKnot implements IMixinService, IClassProvider, IClassBy
     }
 
     @Override
+    public IFeatureValidator getFeatureValidator() {
+        return null;
+    }
+
+    @Override
+    public IAdviceProvider getAdviceProvider() {
+        return null;
+    }
+
+    @Override
     public Collection<String> getPlatformAgents() {
         return Collections.singletonList("org.spongepowered.asm.launch.platform.MixinPlatformAgentDefault");
     }
@@ -238,7 +248,7 @@ public class MixinServiceKnot implements IMixinService, IClassProvider, IClassBy
 
     @Override
     public MixinEnvironment.CompatibilityLevel getMaxCompatibilityLevel() {
-        return MixinEnvironment.CompatibilityLevel.JAVA_21;
+        return MixinEnvironment.CompatibilityLevel.JAVA_25;
     }
 
     @Override
