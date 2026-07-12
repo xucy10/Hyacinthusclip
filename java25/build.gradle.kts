@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.apache.commons:commons-compress:1.27.1")
     implementation("io.sigpipe:jbsdiff:1.0")
     implementation("org.leavesmc:leaves-plugin-mixin-condition:1.0.0")
     implementation("io.github.llamalad7:mixinextras-common:0.4.1")
