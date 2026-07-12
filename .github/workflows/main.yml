@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: zulu
-          java-version: 25
+          java-version: 21
 
       - name: Build JAR
         run: ./gradlew jar --no-daemon
