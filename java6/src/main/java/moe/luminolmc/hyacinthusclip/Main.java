@@ -14,12 +14,6 @@ import java.lang.reflect.Method;
 public final class Main {
 
     public static void main(final String[] args) {
-        if (getJavaVersion() < 25) {
-            System.err.println("Minecraft 26.1 and newer requires running the server with Java 25 or above. " +
-                "For information on how to update Java, see https://docs.papermc.io/misc/java-install");
-            System.exit(1);
-        }
-
         try {
             final Class<?> hyacinthusclipClazz = Class.forName("moe.luminolmc.hyacinthusclip.Hyacinthusclip");
             final Method mainMethod = hyacinthusclipClazz.getMethod("main", String[].class);
