@@ -21,9 +21,23 @@ jobs:
         with:
           distribution: zulu
           java-version: 25
-      - name: Publish to repo
+
+      - name: Build JAR
+        run: ./gradlew jar --no-daemon
+
+      - name: Get version
+        id: version
         if: github.event_name != 'pull_request'
-        run: ./gradlew -Dorg.gradle.parallel=true publish --no-daemon --stacktrace
-        env:
-          PRIVATE_MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          PRIVATE_MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+        run: echo "version=$(./gradlew printVersion --no-daemon -q | tail -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload JAR to Release
+        if: github.event_name != 'pull_request'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ steps.version.outputs.version }}
+          name: "Hyacinthusclip ${{ steps.version.outputs.version }}"
+          artifacts: "build/libs/hyacinthusclip-${{ steps.version.outputs.version }}.jar"
+          allowUpdates: true
+          replacesArtifacts: true
+          makeLatest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
