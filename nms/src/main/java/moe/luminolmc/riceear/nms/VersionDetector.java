@@ -1,6 +1,7 @@
 package moe.luminolmc.riceear.nms;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class VersionDetector {
 
