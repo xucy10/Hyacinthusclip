@@ -1,6 +1,6 @@
-package moe.luminolmc.hyacinthusclip;
+package moe.luminolmc.riceear;
 
-import moe.luminolmc.hyacinthusclip.update.AutoUpdate;
+import moe.luminolmc.riceear.update.AutoUpdate;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -33,8 +33,6 @@ public class Util {
 
     static byte[] readFully(final InputStream in) throws IOException {
         try (in) {
-            // In a test this was 12 ms quicker than a ByteBuffer
-            // and for some reason that matters here.
             byte[] buffer = new byte[16 * 1024];
             int off = 0;
             int read;
@@ -109,9 +107,9 @@ public class Util {
 
     public static RuntimeException fail(final String message, final Throwable err) {
         if (err != null) {
-            Hyacinthusclip.logger.error(message, err);
+            Riceear.logger.error(message, err);
         } else {
-            Hyacinthusclip.logger.error(message);
+            Riceear.logger.error(message);
         }
         System.exit(1);
         throw new InternalError();

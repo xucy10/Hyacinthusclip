@@ -18,7 +18,7 @@
 
 package org.leavesmc.leavesclip.mixin;
 
-import moe.luminolmc.hyacinthusclip.Hyacinthusclip;
+import moe.luminolmc.riceear.Riceear;
 import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leavesclip.logger.SimpleLogger;
 import org.objectweb.asm.ClassReader;
@@ -92,7 +92,7 @@ public class MixinServiceKnot implements IMixinService, IClassProvider, IClassBy
 
     @Override
     public Class<?> findAgentClass(String name, boolean initialize) throws ClassNotFoundException {
-        return Class.forName(name, initialize, Hyacinthusclip.class.getClassLoader());
+        return Class.forName(name, initialize, Riceear.class.getClassLoader());
     }
 
     @Override

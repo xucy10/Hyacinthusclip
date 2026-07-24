@@ -1,4 +1,4 @@
-package moe.luminolmc.hyacinthusclip;
+package moe.luminolmc.riceear;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 
 class IPUtil {
     protected static String getCountryByIp() {
-        final long timeout = Long.getLong("hyacinthusclip.getCountryTimeout", 5) * 1000;
+        final long timeout = Long.getLong("riceear.getCountryTimeout", 5) * 1000;
         HttpClient client = HttpClient.newHttpClient();
         ExecutorService executor = Executors.newFixedThreadPool(IpApi.values().length);
 

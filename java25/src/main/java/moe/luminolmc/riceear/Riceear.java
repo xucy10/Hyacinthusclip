@@ -1,6 +1,6 @@
-package moe.luminolmc.hyacinthusclip;
+package moe.luminolmc.riceear;
 
-import moe.luminolmc.hyacinthusclip.update.AutoUpdate;
+import moe.luminolmc.riceear.update.AutoUpdate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.leavesmc.leavesclip.logger.Logger;
@@ -35,8 +35,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public final class Hyacinthusclip {
-    private static final boolean ENABLE_LEAVES_PLUGIN = Boolean.getBoolean("leavesclip.enable.mixin") || Boolean.getBoolean("hyacinthusclip.enable.mixin");
+public final class Riceear {
+    private static final boolean ENABLE_LEAVES_PLUGIN = Boolean.getBoolean("leavesclip.enable.mixin") || Boolean.getBoolean("riceear.enable.mixin");
     public static final String[] ALL_MAVEN_REPO_LINK_BASE = new String[]{
             "https://maven.aliyun.com/repository/central",
             "https://repo.papermc.io/repository/maven-public",
@@ -45,15 +45,15 @@ public final class Hyacinthusclip {
     };
     public static final Executor DOWNLOAD_EXECUTOR = Executors.newCachedThreadPool();
 
-    public static final Logger logger = new SimpleLogger("Hyacinthusclip");
+    public static final Logger logger = new SimpleLogger("Riceear");
 
     public static void main(final String[] args) {
         if (Path.of("").toAbsolutePath().toString().contains("!")) {
-            System.err.println("Hyacinthusclip may not run in a directory containing '!'. Please rename the affected folder.");
+            System.err.println("Riceear may not run in a directory containing '!'. Please rename the affected folder.");
             System.exit(1);
         }
 
-        if (!Boolean.getBoolean("hyacinthusclip.disable.auto-update")
+        if (!Boolean.getBoolean("riceear.disable.auto-update")
                 && !Boolean.getBoolean("leavesclip.disable.auto-update")) {
             AutoUpdate.init();
         }
@@ -84,8 +84,8 @@ public final class Hyacinthusclip {
             final URL[] classpathUrls = Arrays.copyOf(setupClasspathUrls, setupClasspathUrls.length + MixinJarResolver.jarUrls.length);
             System.arraycopy(MixinJarResolver.jarUrls, 0, classpathUrls, setupClasspathUrls.length, MixinJarResolver.jarUrls.length);
 
-            final ClassLoader parentClassLoader = Hyacinthusclip.class.getClassLoader();
-            MixinServiceKnot.classLoader = Hyacinthusclip.class.getClassLoader();
+            final ClassLoader parentClassLoader = Riceear.class.getClassLoader();
+            MixinServiceKnot.classLoader = Riceear.class.getClassLoader();
 
             MixinBootstrap.init();
             MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.SERVER);
@@ -112,7 +112,7 @@ public final class Hyacinthusclip {
 
             return createdClassLoader;
         } else {
-            return new URLClassLoader(setupClasspathUrls, Hyacinthusclip.class.getClassLoader().getParent());
+            return new URLClassLoader(setupClasspathUrls, Riceear.class.getClassLoader().getParent());
         }
     }
 
@@ -136,7 +136,7 @@ public final class Hyacinthusclip {
 
     private static URL @NotNull [] setupClasspath() {
         final var repoDir = Path.of(System.getProperty("bundlerRepoDir", ""));
-        final boolean onlyUseMojangSource = Boolean.getBoolean("hyacinthusclip.useMojangSource");
+        final boolean onlyUseMojangSource = Boolean.getBoolean("riceear.useMojangSource");
 
         final PatchEntry[] patches = findPatches();
         final Path baseFile;
@@ -163,14 +163,11 @@ public final class Hyacinthusclip {
 
         final Map<String, Map<String, URL>> classpathUrls = extractAndApplyPatches(baseFile, patches, repoDir);
 
-        // Exit if user has set `paperclip.patchonly` or `hyacinthusclip.patchonly` system property to `true`
         if (Boolean.getBoolean("paperclip.patchonly")
-                || Boolean.getBoolean("hyacinthusclip.patchonly")) {
+                || Boolean.getBoolean("riceear.patchonly")) {
             System.exit(0);
         }
 
-        // Keep versions and libraries separate as the versions must come first
-        // This is due to change we make to some library classes inside the versions jar
         final Collection<URL> versionUrls = classpathUrls.get("versions").values();
         final Collection<URL> libraryUrls = classpathUrls.get("libraries").values();
 
@@ -224,15 +221,13 @@ public final class Hyacinthusclip {
 
     private static @NotNull String getDownloadContextFileName(boolean ignoreCountry) {
         final String base = "download-context";
-        final String customized = System.getProperty("hyacinthusclip.downloadContext");
+        final String customized = System.getProperty("riceear.downloadContext");
 
-        // the retry attempt used this
         if (ignoreCountry) {
             return base;
         }
 
         if (customized != null) {
-            // user requires use default download source
             if (customized.equals("null")) {
                 return base;
             }
@@ -240,7 +235,6 @@ public final class Hyacinthusclip {
             return customized;
         }
 
-        // fetch location and determine which to use
         final String country = IPUtil.getCountryByIp();
         if (country.equalsIgnoreCase("China")
                 || country.equalsIgnoreCase("CN")
@@ -256,11 +250,9 @@ public final class Hyacinthusclip {
         try {
             line = Util.readResourceText("/META-INF/" + getDownloadContextFileName(ignoreCountry));
         } catch (final IOException e) {
-            // direct throw if ignoreCountry is true
             if (ignoreCountry) {
                 throw Util.fail("Failed to read download-context file", e);
             }
-            // other download source does not found
             try {
                 line = Util.readResourceText("/META-INF/" + getDownloadContextFileName(true));
             } catch (IOException e1) {
@@ -310,10 +302,8 @@ public final class Hyacinthusclip {
             throw new IllegalArgumentException("Patch data found without patch target");
         }
 
-        // First extract any non-patch files
         final Map<String, Map<String, URL>> urls = extractFiles(patches, originalJar, repoDir);
 
-        // Next apply any patches that we have
         applyPatches(urls, patches, originalJar, repoDir);
 
         return urls;

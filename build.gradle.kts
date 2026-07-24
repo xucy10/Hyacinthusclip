@@ -12,7 +12,7 @@ subprojects {
     }
 }
 
-val mainClass = "moe.luminolmc.hyacinthusclip.Main"
+val mainClass = "moe.luminolmc.riceear.Main"
 
 tasks.jar {
     val java6Jar = project(":java6").tasks.named("jar")
@@ -35,7 +35,7 @@ tasks.jar {
     }
     from(file("license.txt")) {
         into("META-INF/license")
-        rename { "hyacinthusclip-LICENSE.txt" }
+        rename { "riceear-LICENSE.txt" }
     }
     rename { name ->
         if (name.endsWith("-LICENSE.txt")) {
@@ -71,10 +71,10 @@ publishing {
             withoutBuildIdentifier()
 
             pom {
-                val repoPath = "LuminolMC/Hyacinthusclip"
+                val repoPath = "LuminolMC/Riceear"
                 val repoUrl = "https://github.com/$repoPath"
 
-                name.set("Hyacinthusclip")
+                name.set("Riceear")
                 description.set(project.description)
                 url.set(repoUrl)
                 packaging = "jar"

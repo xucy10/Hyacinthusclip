@@ -1,17 +1,8 @@
-/*
- * Paperclip - Paper Minecraft launcher
- *
- * Copyright (c) 2019 Kyle Wood (DemonWav)
- * https://github.com/PaperMC/Paperclip
- *
- * MIT License
- */
-
-package moe.luminolmc.hyacinthusclip;
+package moe.luminolmc.riceear;
 
 import io.sigpipe.jbsdiff.InvalidHeaderException;
 import io.sigpipe.jbsdiff.Patch;
-import moe.luminolmc.hyacinthusclip.update.AutoUpdate;
+import moe.luminolmc.riceear.update.AutoUpdate;
 import org.apache.commons.compress.compressors.CompressorException;
 
 import java.io.*;
@@ -89,59 +80,46 @@ public record PatchEntry(
         final Path inputFile = inputDir.resolve(this.originalPath);
         final Path outputFile = targetDir.resolve(this.outputPath);
 
-        // Short-cut if the patch is already applied
         if (Files.exists(outputFile) && Util.isFileValid(outputFile, this.outputHash)) {
-            // For the classpath, use the patched file instead of the original
             urls.get(this.location).put(this.originalPath, outputFile.toUri().toURL());
             return;
         }
 
         if (!announced) {
-            Hyacinthusclip.logger.info("Applying patches");
+            Riceear.logger.info("Applying patches");
             announced = true;
         }
 
-        // Verify input file is correct
-        if (Files.notExists(inputFile)) {
-            throw new IllegalStateException("Input file not found: " + inputFile);
-        }
-        if (!Util.isFileValid(inputFile, this.originalHash)) {
-            throw new IllegalStateException("Hash check of input file failed for " + inputFile);
-        }
-
-        // Get and verity patch data is correct
-        final String fullPatchPath = "/META-INF/" + Util.endingSlash(this.location) + this.patchPath;
-        final InputStream patchStream = AutoUpdate.getResourceAsStreamFromTargetJar(fullPatchPath);
-        if (patchStream == null) {
-            throw new IllegalStateException("Patch file not found: " + fullPatchPath);
-        }
-        final byte[] patchBytes = Util.readFully(patchStream);
-        if (!Util.isDataValid(patchBytes, this.patchHash)) {
-            throw new IllegalStateException("Hash check of patch file failed for " + fullPatchPath);
-        }
+        Riceear.logger.info("  Applying patch to " + this.originalPath);
 
         final byte[] originalBytes = Util.readBytes(inputFile);
+        if (!Util.isDataValid(originalBytes, this.originalHash)) {
+            throw new IllegalStateException("Original file hash mismatch for " + this.originalPath);
+        }
+
+        final Path patchFile = inputDir.resolve(this.patchPath);
+        final byte[] patchBytes = Util.readBytes(patchFile);
+        if (!Util.isDataValid(patchBytes, this.patchHash)) {
+            throw new IllegalStateException("Patch file hash mismatch for " + this.patchPath);
+        }
+
         try {
-            if (!Files.isDirectory(outputFile.getParent())) {
-                Files.createDirectories(outputFile.getParent());
+            if (!Files.isDirectory(targetDir)) {
+                Files.createDirectories(targetDir);
             }
-            try (
-                    final OutputStream outStream =
-                            new BufferedOutputStream(Files.newOutputStream(outputFile, CREATE, WRITE, TRUNCATE_EXISTING))
-            ) {
-                Patch.patch(originalBytes, patchBytes, outStream);
+
+            final byte[] outputBytes = Patch.patch(originalBytes, patchBytes);
+            if (!Util.isDataValid(outputBytes, this.outputHash)) {
+                throw new IllegalStateException("Output hash mismatch for " + this.outputPath);
             }
-        } catch (final InvalidHeaderException | IOException | CompressorException e) {
-            // Don't move this `catch` clause to the outer try-with-resources
-            // the Util.fail method never returns, so `close()` would never get called
-            throw Util.fail("Failed to patch " + inputFile, e);
-        }
 
-        if (!Util.isFileValid(outputFile, this.outputHash)) {
-            throw new IllegalStateException("Patch not applied correctly for " + this.outputPath);
-        }
+            try (final OutputStream out = Files.newOutputStream(outputFile, CREATE, WRITE, TRUNCATE_EXISTING)) {
+                out.write(outputBytes);
+            }
 
-        // For the classpath, use the patched file instead of the original
-        urls.get(this.location).put(this.originalPath, outputFile.toUri().toURL());
+            urls.get(this.location).put(this.originalPath, outputFile.toUri().toURL());
+        } catch (final InvalidHeaderException | CompressorException e) {
+            throw new IOException("Failed to apply patch", e);
+        }
     }
 }

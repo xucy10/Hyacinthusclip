@@ -1,6 +1,6 @@
-package moe.luminolmc.hyacinthusclip;
+package moe.luminolmc.riceear;
 
-import moe.luminolmc.hyacinthusclip.downloader.Downloader;
+import moe.luminolmc.riceear.downloader.Downloader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -54,7 +54,6 @@ public record FileEntry(byte[] hash, String id, String path) {
     ) throws IOException {
         for (final PatchEntry patch : patches) {
             if (patch.location().equals(targetName) && patch.outputPath().equals(this.path)) {
-                // This file will be created from a patch
                 return CompletableFuture.completedFuture(null);
             }
         }
@@ -65,9 +64,9 @@ public record FileEntry(byte[] hash, String id, String path) {
             return CompletableFuture.completedFuture(null);
         }
 
-        Hyacinthusclip.logger.info("Downloading missing file " + this.id + " to " + outputFile + " .");
+        Riceear.logger.info("Downloading missing file " + this.id + " to " + outputFile + " .");
 
-        final @NotNull CompletableFuture<Path> task = new Downloader(this, outputDir, outputFile, baseDir, originalRootDir, true).downloadOrLoad(Hyacinthusclip.DOWNLOAD_EXECUTOR);
+        final @NotNull CompletableFuture<Path> task = new Downloader(this, outputDir, outputFile, baseDir, originalRootDir, true).downloadOrLoad(Riceear.DOWNLOAD_EXECUTOR);
 
         return task.thenAccept(ret -> {
             synchronized (urls) {

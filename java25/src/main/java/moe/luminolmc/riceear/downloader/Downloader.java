@@ -1,9 +1,9 @@
-package moe.luminolmc.hyacinthusclip.downloader;
+package moe.luminolmc.riceear.downloader;
 
-import moe.luminolmc.hyacinthusclip.FileEntry;
-import moe.luminolmc.hyacinthusclip.Hyacinthusclip;
-import moe.luminolmc.hyacinthusclip.Util;
-import moe.luminolmc.hyacinthusclip.update.AutoUpdate;
+import moe.luminolmc.riceear.FileEntry;
+import moe.luminolmc.riceear.Riceear;
+import moe.luminolmc.riceear.Util;
+import moe.luminolmc.riceear.update.AutoUpdate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.leavesmc.leavesclip.logger.SimpleLogger;
@@ -24,7 +24,7 @@ import static java.nio.file.StandardOpenOption.*;
 
 public record Downloader(FileEntry entry, Path outputDir, Path outputFile, String baseDir, Path originalRootDir,
                          boolean useInternal) {
-    private static final SimpleLogger logger = new SimpleLogger("Hyacinthusclip");
+    private static final SimpleLogger logger = new SimpleLogger("Riceear");
 
     @Contract("_ -> new")
     public @NotNull CompletableFuture<Path> downloadOrLoad(Executor worker) {
@@ -63,7 +63,7 @@ public record Downloader(FileEntry entry, Path outputDir, Path outputFile, Strin
                 this.deleteIfInvalid();
 
                 final MavenDependencyResolver resolver = new MavenDependencyResolver(
-                        (List.of(Arrays.stream(Hyacinthusclip.ALL_MAVEN_REPO_LINK_BASE).map(url -> new MavenDependencyResolver.MavenRepository(String.valueOf(url.hashCode()), url)).toArray(MavenDependencyResolver.MavenRepository[]::new))),
+                        (List.of(Arrays.stream(Riceear.ALL_MAVEN_REPO_LINK_BASE).map(url -> new MavenDependencyResolver.MavenRepository(String.valueOf(url.hashCode()), url)).toArray(MavenDependencyResolver.MavenRepository[]::new))),
                         this.outputDir
                 );
 

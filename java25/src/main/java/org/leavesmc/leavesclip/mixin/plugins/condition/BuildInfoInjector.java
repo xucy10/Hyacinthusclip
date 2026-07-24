@@ -1,6 +1,6 @@
 package org.leavesmc.leavesclip.mixin.plugins.condition;
 
-import moe.luminolmc.hyacinthusclip.update.AutoUpdate;
+import moe.luminolmc.riceear.update.AutoUpdate;
 import org.leavesmc.leavesclip.logger.Logger;
 import org.leavesmc.leavesclip.logger.SimpleLogger;
 import org.leavesmc.plugin.mixin.condition.BuildInfoProvider;

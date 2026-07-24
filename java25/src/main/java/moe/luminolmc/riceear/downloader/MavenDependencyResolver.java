@@ -1,4 +1,4 @@
-package moe.luminolmc.hyacinthusclip.downloader;
+package moe.luminolmc.riceear.downloader;
 
 import org.leavesmc.leavesclip.logger.SimpleLogger;
 import org.w3c.dom.Document;
@@ -87,9 +87,6 @@ public class MavenDependencyResolver {
         }
     }
 
-    /**
-     * Maven 坐标 - 修复了 SNAPSHOT 路径问题
-     */
     public static class MavenCoordinate {
         final String groupId;
         final String artifactId;
@@ -98,7 +95,7 @@ public class MavenDependencyResolver {
         String classifier;
 
         boolean isSnapshot;
-        String snapshotVersion;      // 具体的时间戳版本，如 0.1-20240720.200737-2
+        String snapshotVersion;
         String snapshotTimestamp;
         String snapshotBuildNumber;
 
@@ -115,29 +112,14 @@ public class MavenDependencyResolver {
             this.isSnapshot = version.endsWith("-SNAPSHOT");
         }
 
-        /**
-         * 获取仓库路径（目录）
-         * SNAPSHOT 版本使用 -SNAPSHOT 作为目录名
-         * 例如: me/lucko/spark-api/0.1-SNAPSHOT/
-         */
         public String getPath() {
             return groupId.replace('.', '/') + "/" + artifactId + "/" + getBaseVersion();
         }
 
-        /**
-         * 获取基础版本（用于路径）
-         * SNAPSHOT 版本返回 -SNAPSHOT 形式
-         * 例如: 0.1-SNAPSHOT
-         */
         public String getBaseVersion() {
-            return version;  // 保持原始版本（包含 -SNAPSHOT）
+            return version;
         }
 
-        /**
-         * 获取实际版本（用于文件名）
-         * SNAPSHOT 版本返回时间戳版本
-         * 例如: 0.1-20240720.200737-2
-         */
         public String getActualVersion() {
             return snapshotVersion != null ? snapshotVersion : version;
         }
@@ -159,14 +141,9 @@ public class MavenDependencyResolver {
             return packagingType;
         }
 
-        /**
-         * 获取文件名
-         * 使用实际版本（SNAPSHOT 使用时间戳版本）
-         * 例如: spark-api-0.1-20240720.200737-2.jar
-         */
         public String getFileName() {
             StringBuilder sb = new StringBuilder(artifactId).append("-");
-            sb.append(getActualVersion());  // 使用时间戳版本
+            sb.append(getActualVersion());
 
             if (classifier != null && !classifier.isEmpty()) {
                 sb.append("-").append(classifier);
@@ -176,25 +153,14 @@ public class MavenDependencyResolver {
             return sb.toString();
         }
 
-        /**
-         * 获取 POM 文件名
-         */
         public String getPomFileName() {
             return artifactId + "-" + getActualVersion() + ".pom";
         }
 
-        /**
-         * 获取完整的远程路径（包含文件名）
-         * 正确处理 SNAPSHOT：路径用 -SNAPSHOT，文件名用时间戳
-         * 例如: me/lucko/spark-api/0.1-SNAPSHOT/spark-api-0.1-20240720.200737-2.jar
-         */
         public String getRemotePath() {
             return getPath() + "/" + getFileName();
         }
 
-        /**
-         * 获取 POM 的完整远程路径
-         */
         public String getRemotePomPath() {
             return getPath() + "/" + getPomFileName();
         }
@@ -392,7 +358,6 @@ public class MavenDependencyResolver {
                     size = Files.size(filePath);
                 }
             } catch (IOException e) {
-                // ignore
             }
             this.fileSize = size;
         }
@@ -466,8 +431,6 @@ public class MavenDependencyResolver {
         }
     }
 
-    // ==================== 公共 API ====================
-
     public DownloadResult download(String coordinate) throws IOException {
         return download(coordinate, DownloadOptions.defaults());
     }
@@ -494,9 +457,6 @@ public class MavenDependencyResolver {
         return download(new MavenCoordinate(coordinate), options);
     }
 
-    /**
-     * 核心下载方法 - 修复了 SNAPSHOT 路径问题
-     */
     public DownloadResult download(MavenCoordinate coordinate, DownloadOptions options) throws IOException {
         logger.info("Resolving: " + coordinate.getBaseVersion());
 
@@ -516,12 +476,10 @@ public class MavenDependencyResolver {
             try {
                 logger.info("Trying repository: " + repo);
 
-                // 解析 SNAPSHOT 版本
                 if (coordinate.isSnapshot) {
                     resolveSnapshotVersion(coordinate, repo);
                 }
 
-                // 解析 packaging
                 if (coordinate.packaging == null) {
                     PomInfo pomInfo = parsePom(coordinate, repo);
                     coordinate.packaging = pomInfo.packaging != null ? pomInfo.packaging : "jar";
@@ -535,7 +493,6 @@ public class MavenDependencyResolver {
                     }
                 }
 
-                // 使用新的 getRemotePath() 方法
                 String remotePath = coordinate.getRemotePath();
                 String downloadUrl = repo.url + remotePath;
 
@@ -616,8 +573,6 @@ public class MavenDependencyResolver {
         return downloadBatch(Arrays.asList(coordinates), DownloadOptions.defaults());
     }
 
-    // ==================== 辅助方法 ====================
-
     private Path determineOutputPath(MavenCoordinate coordinate, DownloadOptions options) {
         if (options.outputPath != null) {
             return options.outputPath;
@@ -667,13 +622,9 @@ public class MavenDependencyResolver {
         return result;
     }
 
-    /**
-     * 解析 SNAPSHOT 版本 - 修复了元数据路径
-     */
     private void resolveSnapshotVersion(MavenCoordinate coordinate, MavenRepository repo) throws IOException {
         if (!coordinate.isSnapshot) return;
 
-        // 元数据路径使用 -SNAPSHOT 版本
         String metadataPath = coordinate.getPath() + "/maven-metadata.xml";
         String metadataUrl = repo.url + metadataPath;
 
@@ -750,13 +701,9 @@ public class MavenDependencyResolver {
         return null;
     }
 
-    /**
-     * 解析 POM 文件 - 使用正确的路径
-     */
     private PomInfo parsePom(MavenCoordinate coordinate, MavenRepository repo) throws IOException {
         PomInfo pomInfo = new PomInfo();
 
-        // 使用 getRemotePomPath() 获取正确的 POM 路径
         String remotePomPath = coordinate.getRemotePomPath();
         String pomUrl = repo.url + remotePomPath;
 

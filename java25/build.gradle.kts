@@ -37,7 +37,7 @@ dependencies {
 }
 
 tasks.shadowJar {
-    val prefix = "hyacinthusclip.libs"
+    val prefix = "riceear.libs"
     listOf("org.apache", "org.tukaani", "io.sigpipe", "com.google").forEach { pack ->
         relocate(pack, "$prefix.$pack")
     }

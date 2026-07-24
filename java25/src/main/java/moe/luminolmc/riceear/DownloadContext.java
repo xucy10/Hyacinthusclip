@@ -1,4 +1,4 @@
-package moe.luminolmc.hyacinthusclip;
+package moe.luminolmc.riceear;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -47,7 +47,7 @@ public record DownloadContext(byte[] hash, URL url, String fileName) {
         }
         Files.deleteIfExists(outputFile);
 
-        Hyacinthusclip.logger.info("Downloading {}", this.fileName);
+        Riceear.logger.info("Downloading {}", this.fileName);
 
         try (
                 final ReadableByteChannel source = Channels.newChannel(this.url.openStream());
@@ -55,7 +55,7 @@ public record DownloadContext(byte[] hash, URL url, String fileName) {
         ) {
             fileChannel.transferFrom(source, 0, Long.MAX_VALUE);
         } catch (final IOException e) {
-            Hyacinthusclip.logger.error(e, "Failed to download {}", this.fileName);
+            Riceear.logger.error(e, "Failed to download {}", this.fileName);
             e.printStackTrace();
             System.exit(1);
         }
