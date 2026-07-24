@@ -108,7 +108,9 @@ public record PatchEntry(
                 Files.createDirectories(targetDir);
             }
 
-            final byte[] outputBytes = Patch.patch(originalBytes, patchBytes);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            Patch.patch(originalBytes, patchBytes, outputStream);
+            final byte[] outputBytes = outputStream.toByteArray();
             if (!Util.isDataValid(outputBytes, this.outputHash)) {
                 throw new IllegalStateException("Output hash mismatch for " + this.outputPath);
             }
