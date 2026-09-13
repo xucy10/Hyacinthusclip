@@ -67,5 +67,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "hyacinthusclip"
+rootProject.name = "riceear"
 include("java6", "java25", "nms")
