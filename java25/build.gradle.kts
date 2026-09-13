@@ -15,12 +15,7 @@ tasks.withType<JavaCompile>().configureEach {
     options.release.set(21)
 }
 
-repositories {
-    mavenCentral()
-    maven("https://repo.spongepowered.org/maven/")
-    maven("https://repo.leavesmc.org/releases/")
-    maven("https://repo.leavesmc.org/snapshots/")
-}
+// 仓库由根项目 settings.gradle.kts 统一管理（dependencyResolutionManagement）
 
 dependencies {
     implementation("org.apache.commons:commons-compress:1.27.1")
