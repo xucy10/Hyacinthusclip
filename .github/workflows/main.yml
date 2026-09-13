@@ -35,8 +35,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ steps.version.outputs.version }}
-          name: "Riceear ${{ steps.version.outputs.version }}"
-          artifacts: "build/libs/riceear-${{ steps.version.outputs.version }}.jar"
+          name: "Hyacinthusclip ${{ steps.version.outputs.version }}"
+          artifacts: "build/libs/hyacinthusclip-*.jar"
           allowUpdates: true
           replacesArtifacts: true
           makeLatest: true
