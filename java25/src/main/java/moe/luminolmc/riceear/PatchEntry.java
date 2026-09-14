@@ -97,10 +97,21 @@ public record PatchEntry(
             throw new IllegalStateException("Original file hash mismatch for " + this.originalPath);
         }
 
-        final Path patchFile = inputDir.resolve(this.patchPath);
-        final byte[] patchBytes = Util.readBytes(patchFile);
+        // The patch data lives inside the launcher (clip) jar, NOT inside the downloaded
+        // vanilla bundler jar. Reading it via originalRootDir caused NoSuchFileException.
+        final String fullPatchPath = "/META-INF/" + Util.endingSlash(this.location) + this.patchPath;
+        final InputStream patchStream = AutoUpdate.getResourceAsStreamFromTargetJar(fullPatchPath);
+        if (patchStream == null) {
+            throw new IllegalStateException("Patch file not found in launcher jar: " + fullPatchPath);
+        }
+        final byte[] patchBytes;
+        try {
+            patchBytes = Util.readFully(patchStream);
+        } catch (final IOException e) {
+            throw Util.fail("Failed to read patch file " + fullPatchPath, e);
+        }
         if (!Util.isDataValid(patchBytes, this.patchHash)) {
-            throw new IllegalStateException("Patch file hash mismatch for " + this.patchPath);
+            throw new IllegalStateException("Patch file hash mismatch for " + fullPatchPath);
         }
 
         try {
